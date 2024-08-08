@@ -1,0 +1,73 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches: [master, main]
+    types: [opened, synchronize]
+jobs:
+  simple_deployment_pipeline:
+    timeout-minutes: 60
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies 
+        run: npm install  
+      - name: Check style
+        run: npm run lint   # from eslint
+      - run: npm run build
+      - name: Run all tests
+        run: npm test
+      
+        # NO E2E TESTS  
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
+      # - name: Run Playwright tests
+      #   run: npx playwright test
+      # - uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #       name: playwright-report
+      #       path: playwright-report/
+      #       retention-days: 30
+      
+      # NO DEPLOYMENT
+      - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
+        name: Trigger deployment
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Notify successful deployment
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ success() }}
+        with:
+          severity: info
+          text: 'BUILD succeeded :-)'
+          description: ""
+          details: ""
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+        # env:
+        #   DEBUG: true  # Enable debug mode to log the response
+      - name: Notify deployment failure
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ failure() }}
+        with:
+          severity: error
+          text: 'BUILD failed.'
+          description: "Initiator: ${{ github.actor }}"
+          details: "Repo: ${{ github.repository }}"
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false)}}
+        name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.70.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          DRY_RUN: false
