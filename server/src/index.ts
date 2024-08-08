@@ -1,15 +1,28 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import diagnosesRouter from './routes/diagnoses';
 import patientsRouter from './routes/patients';
+
+const clientDirectory = '../../../client/dist';
+const staticClientPath = path.join(__dirname, clientDirectory);
+console.log(__dirname);
 
 const app = express();
 app.use(express.json());
 
 const PORT = 3001;
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-app.use(cors());
+if (process.env.NODE_ENV === 'development') {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  app.use(cors());
+}
+
+// Serve the static client files
+if (process.env.NODE_ENV === 'production') {
+  console.log(`Serving static files from ${staticClientPath}`);
+  app.use(express.static(staticClientPath));
+}
 
 // Error-handling middleware for JSON parsing errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +43,14 @@ app.get('/api/ping', (_req, res) => {
 
 app.use('/api/diagnoses', diagnosesRouter);
 app.use('/api/patients', patientsRouter);
+
+// Serve the index html file from root and /index.html paths
+if (process.env.NODE_ENV === 'production') {
+  app.get(['/', '/index.html'], (_req, res) => {
+    console.log(`Client requested from ${staticClientPath}`);
+    res.sendFile(path.join(staticClientPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

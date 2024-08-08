@@ -6,11 +6,11 @@ Exercise 11.20 monorepo
 npm workspaces are not used, as they do not support React and vite.
 
 ### client
-cd client
+```cd client```
 ```npm install```
 
 ### server
-cd ../server
+```cd ../server```
 ```npm install```
 
 ## Development
@@ -28,3 +28,7 @@ validate server is running locally: http://localhost:3001/api/ping
 ## Building
 
 ```npm run build```
+
+## Running
+```cd ../server```
+```NODE_ENV=production npm start```
