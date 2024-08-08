@@ -3,11 +3,15 @@
     "private": true,
     "version": "0.0.1",
     "scripts": {
-      "dev-client": "npm run dev --prefix client",
-      "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
-      "start": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"",
-      "build": "npm run build --prefix client && npm run build --prefix server"
+        "dev-client": "npm run dev --prefix client",
+        "dev-server": "npm run dev --prefix server",
+        "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+        "lint-client": "npm run lint --prefix client",
+        "lint-server": "npm run lint --prefix server",
+        "start": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"",
+        "build": "npm run build --prefix client && npm run build --prefix server"
     },
     "devDependencies": {
+        "concurrently": "^8.2.2"
     }
 }
