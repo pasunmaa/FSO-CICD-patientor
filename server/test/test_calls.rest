@@ -1,0 +1,102 @@
+// Success: Diagnoses
+GET  http://localhost:3001/api/diagnoses HTTP/1.1
+content-type: application/json
+
+###
+
+// Success: Patients
+GET  http://localhost:3001/api/patients HTTP/1.1
+content-type: application/json
+
+###
+
+// Success: Get patient by ID - Matti Luukkainen: 1 Healthcheck entry
+GET http://localhost:3001/api/patients/d2773c6e-f723-11e9-8f0b-362b9e155667 HTTP/1.1
+content-type: application/json
+
+###
+
+// Success: Get patient by ID - Martin Riggs: 1 OccupationalHealthcare entry, 3 diagnoses codes, sickleave
+GET http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667 HTTP/1.1
+content-type: application/json
+
+###
+
+// Success: Get patient by ID - Dana Scully: 2 HealthCheck entries and 1 OccupationalHealthcare entry
+GET http://localhost:3001/api/patients/d2773822-f723-11e9-8f0b-362b9e155667 HTTP/1.1
+content-type: application/json
+
+###
+
+// Failed: Get patient by ID - 404 not found
+GET http://localhost:3001/api/patients/d277a1f4-5b4b-4b9b-8e5b-3b5e3e4f7f3b HTTP/1.1
+content-type: application/json
+
+###
+
+// Success: Add patient
+POST http://localhost:3001/api/patients  HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Donald",
+  "dateOfBirth": "1966-06-06",
+  "ssn": "123456A666X",
+  "gender": "other",
+  "occupation": "criminal",
+  "entries": []
+}
+
+###
+
+// Fail: Add patient - incorrect gender, Capital
+POST http://localhost:3001/api/patients  HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Donald",
+  "dateOfBirth": "1966-06-06",
+  "ssn": "123456A666X",
+  "gender": "Male",
+  "occupation": "criminal",
+  "entries": []
+}
+
+###
+
+// Fail: Add patient - missing field
+POST http://localhost:3001/api/patients  HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Donald",
+  "dateOfBirth": "1966-06-06",
+  "ssn": "123456A666X",
+  "gender": "female",
+  "entries": []
+}
+
+###
+
+// Fail: Add patient, wrong content
+POST http://localhost:3001/api/patients  HTTP/1.1
+content-type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, 0, 3, 0, 2.5],
+  "target": 2.5
+}
+
+###
+
+// Fail: Add patient - malformed JSON body
+POST http://localhost:3001/api/patients  HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Donald",
+  "dateOfBirth": "1966-06-06",
+  "ssn": "123456A666X",
+  "gender": "female",
+  "occupation": "criminal",
+}
