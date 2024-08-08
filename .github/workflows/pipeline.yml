@@ -40,7 +40,7 @@ jobs:
         name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: Notify successful deployment
-        uses: rjstone/discord-webhook-notify@v1.0.4
+        uses: rjstone/discord-webhook-notify@v1
         if: ${{ success() }}
         with:
           severity: info
@@ -51,7 +51,7 @@ jobs:
         # env:
         #   DEBUG: true  # Enable debug mode to log the response
       - name: Notify deployment failure
-        uses: rjstone/discord-webhook-notify@v1.0.4
+        uses: rjstone/discord-webhook-notify@v1
         if: ${{ failure() }}
         with:
           severity: error
