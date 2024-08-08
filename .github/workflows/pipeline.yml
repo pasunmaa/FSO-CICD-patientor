@@ -18,7 +18,9 @@ jobs:
       - name: Install dependencies 
         run: npm install  
       - name: Check style
-        run: npm run lint   # from eslint
+        run: |
+          npm run lint-client   # lint for client
+          npm run lint-server   # lint for server
       - run: npm run build
       - name: Run all tests
         run: npm test
