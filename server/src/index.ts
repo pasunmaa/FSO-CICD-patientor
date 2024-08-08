@@ -1,12 +1,12 @@
+const clientDirectory = '../../../client/dist';
+const staticClientPath = path.join(__dirname, clientDirectory);
+console.log(__dirname);
+
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import diagnosesRouter from './routes/diagnoses';
 import patientsRouter from './routes/patients';
-
-const clientDirectory = '../../../client/dist';
-const staticClientPath = path.join(__dirname, clientDirectory);
-console.log(__dirname);
 
 const app = express();
 app.use(express.json());

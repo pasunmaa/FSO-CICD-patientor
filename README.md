@@ -30,5 +30,4 @@ validate server is running locally: http://localhost:3001/api/ping
 ```npm run build```
 
 ## Running
-```cd ../server```
-```NODE_ENV=production npm start```
+```npm start```
