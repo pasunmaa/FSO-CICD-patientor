@@ -47,10 +47,11 @@ jobs:
       #       path: playwright-report/
       #       retention-days: 30
       
-      # NO DEPLOYMENT
-      # - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
-      #   name: Trigger deployment
-      #   run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      # DEPLOYMENT
+      - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
+        name: Trigger deployment
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+        
       - name: Github variables usage
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
