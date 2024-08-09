@@ -3,11 +3,9 @@
 
 interface ImportMetaEnv {
     readonly VITE_BASE_URL: string;
-    readonly VITE_REALM: string;
-    readonly VITE_CLIENT_ID: string;
-   
-  }
+    readonly VITE_ENV: string;
+}
   
-  interface ImportMeta {
+interface ImportMeta {
     readonly env: ImportMetaEnv;
-  }
+}
