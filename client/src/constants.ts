@@ -1,6 +1,6 @@
 // Adjust apiBaseUrl to match the environment
 const env = import.meta.env.VITE_ENV;
-const productionApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const productionApiBaseUrl = import.meta.env.VITE_BASE_URL;
 
 export const apiBaseUrl = ((env === undefined) || (env === 'dev'))
   ? 'http://localhost:3001/api'
