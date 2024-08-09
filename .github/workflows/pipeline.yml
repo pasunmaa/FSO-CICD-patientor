@@ -86,12 +86,12 @@ jobs:
           DISCORD_USERNAME: PetriA
           COMMIT_TIMESTAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
           DISCORD_EMBEDS: >
-            '[{
+            [{
                 "type": "Info",
                 "title": "Patientor build",
-                "description": "Successful build from repo: ${{ github.repository }} at ${{ env.TM_STAMP }}",
+                "description": "Successful build from repo: ${{ github.repository }}",
                 "color": 40811
-            }]'
+            }]
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
