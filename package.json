@@ -8,11 +8,14 @@
         "dev": "NODE_ENV=development concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
         "lint-client": "npm run lint --prefix client",
         "lint-server": "npm run lint --prefix server",
-        "test": "npm run test --prefix client",
+        "test": "npm run test --prefix client && npm run test --prefix server",
+        "e2etest": "vitest --dir e2e-tests",
         "build": "npm run build --prefix client && npm run tsc --prefix server",
         "start": "NODE_ENV=production npm start --prefix server"
     },
     "devDependencies": {
-        "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2",
+        "supertest": "^7.0.0",
+        "vitest": "^2.0.5"
     }
 }

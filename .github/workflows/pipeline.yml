@@ -25,8 +25,9 @@ jobs:
         run: |
           npm run lint-client   # lint for client
           npm run lint-server   # lint for server
-      - run: npm run build
-      - name: Run all tests
+      - name: Build client and server
+        run: npm run build
+      - name: Run unit tests
         run: npm test
       
         # NO E2E TESTS  
@@ -45,6 +46,9 @@ jobs:
       - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
         name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Run E2E tests
+        if: ${{ success() }}
+        run: e2e-tests
       - name: Notify successful deployment
         uses: rjstone/discord-webhook-notify@v1
         if: ${{ success() }}
