@@ -82,10 +82,16 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
-          #DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
           COMMIT_TIMESTAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
-          DISCORD_EMBEDS: '[{ "type": "Info", "title": "Push", "description": "Successful build from repo: ${{ github.repository }}", "color": 40811, timestamp: ${{ env.COMMIT_TIMESTAMP }} }]'
-          
+          DISCORD_EMBEDS: >
+            [
+              {
+                "type": "Info",
+                "title": "Patientor build",
+                "description": "Successful build from repo: ${{ github.repository }} at ${{ env.COMMIT_TIMESTAMP }}",
+                "color": 40811
+              }
+            ]
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
@@ -96,12 +102,12 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
           #DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
-          DISCORD_EMBEDS: '[{ "type": "Error", "title": "Push", "description": "Failed build in repo ${{ github.repository }}", "color": 16711680 }]'
+          DISCORD_EMBEDS: '[{ "type": "Error", "title": "Patientor build", "description": "Failed build in repo ${{ github.repository }}", "color": 16711680 }]'
           
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
-          args: "Failed to buidl a new version of Patientor."
+          args: "Failed to build a new version of Patientor."
   
       # - name: Notify successful deployment
       #   uses: rjstone/discord-webhook-notify@v1
