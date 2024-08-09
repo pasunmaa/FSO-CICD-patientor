@@ -1,17 +1,19 @@
-const clientDirectory = '../../../client/dist';
-const staticClientPath = path.join(__dirname, clientDirectory);
-console.log(__dirname);
-
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import diagnosesRouter from './routes/diagnoses';
 import patientsRouter from './routes/patients';
 
+const clientDirectory = '../../../client/dist';
+//const staticClientPath = path.join(__dirname, clientDirectory);
+const staticClientPath: string = path.resolve(__dirname, clientDirectory);
+console.log('Current directory:', __dirname);
+console.log('Static client path:', staticClientPath);
+
 const app = express();
 app.use(express.json());
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
