@@ -13,6 +13,6 @@ echo "Install dependencies on server folder"
 cd ../server
 npm install
 echo "Build server"
-npm run build
+npm run tsc
 cd ..
 
