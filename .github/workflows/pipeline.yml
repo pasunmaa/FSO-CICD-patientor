@@ -51,7 +51,7 @@ jobs:
       - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
         name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-        
+
       - name: Github variables usage
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -81,7 +81,7 @@ jobs:
       #       "content": "Testing Discord Webhook", "embeds": "${{env.DISCORD_EMBEDS}}" }' ${{env.DISCORD_WEBHOOK}}
 
       - name: Build success discord notification
-        if: ${{ success() }}
+        if: ${{ success() && (contains(join(github.event.commits.*.message, ' '), '#discord') == true) }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
