@@ -66,11 +66,19 @@ jobs:
           echo "GITHUB_REPOSITORY: ${{ github.repository }}"
           echo "Github actor from environment variable - long format: ${{env.GH_ACTOR}}"
           echo "Github actor from environment variable - short format: $GH_ACTOR"
+      - name: Discord notification with curl
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: PetriA
+          DISCORD_EMBEDS: '[{"type": "Info", "title": "Push", "description": "Notification with curl.", "color": 40811" }]'
+        run: |
+          curl -X POST -H 'Content-type: application/json' -d '{"username": "'"$DISCORD_USERNAME"'", "embeds": '"$DISCORD_EMBEDS"'}' $DISCORD_WEBHOOK
       - name: Discord notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
-          DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
+          #DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
+          DISCORD_EMBEDS: '[{ "type": "Info", "title": "Push", "description": "Successful build", "color": 40811 }]'
           
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
@@ -82,7 +90,7 @@ jobs:
         if: ${{ success() }}
         with:
           severity: info
-          text: 'Patientor BUILD succeeded :-)'
+          text: 'Patientor BUILD succeeded.'
           description: ""
           details: ""
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
