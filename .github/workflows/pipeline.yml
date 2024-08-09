@@ -9,7 +9,7 @@ on:
 jobs:
   simple_deployment_pipeline:
     env:
-      TM_STAMP: ${{ toJson(github.event.commits.*.timestamp) }} 
+      TM_STAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
     timeout-minutes: 60
     runs-on: ubuntu-20.04
     steps:
@@ -86,14 +86,12 @@ jobs:
           DISCORD_USERNAME: PetriA
           COMMIT_TIMESTAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
           DISCORD_EMBEDS: >
-            [
-              {
+            '[{
                 "type": "Info",
                 "title": "Patientor build",
                 "description": "Successful build from repo: ${{ github.repository }} at ${{ env.TM_STAMP }}",
                 "color": 40811
-              }
-            ]
+            }]'
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
@@ -104,7 +102,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
           #DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
-          DISCORD_EMBEDS: '[{ "type": "Error", "title": "Patientor build", "description": "Failed build in repo ${{ github.repository }}", "color": 16711680 }]'
+          DISCORD_EMBEDS: '[{ "type": "Error", "title": "Patientor build", "description": "Failed build in repo ${{ github.repository }} at ${{env.TM_STAMP}}", "color": 16711680 }]'
           
           #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
