@@ -51,34 +51,19 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GH: ${{ github.ref }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GH_REF: ${{ github.ref }}
           GH_ACTOR: ${{ github.actor }}
           GITHUB_JOB: ${{ github.job }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_ACTION: ${{ github.action }}
+          #GITHUB_ACTIONS: ${{ github.actions }}
+          GITHUB_EVENT: ${{ toJson(github.event) }}
           #TM_STAMP: ${{ toJson(github.event.commits.*.timestamp) }} 
         run: |
           echo "GITHUB_REPOSITORY: ${{ github.repository }}"
           echo "Github actor from environment variable - long format: ${{env.GH_ACTOR}}"
           echo "Github actor from environment variable - short format: $GH_ACTOR"
-      - name: Github notification plugin
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_WORKFLOW: ${{ github.workflow }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-          GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          GITHUB_JOB: ${{ github.job }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          GITHUB_ACTION: ${{ github.action }}
-          #GITHUB_ACTIONS: ${{ github.actions }}
-          GITHUB_EVENT: ${{ toJson(github.event) }}
-        uses: Ilshidur/action-github-notification@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
-        with:
-          args: "Patientor deployed: test github notifications"
       - name: Discord notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
