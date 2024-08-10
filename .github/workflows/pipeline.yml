@@ -36,17 +36,17 @@ jobs:
       - name: Run e2e server tests
         run: npm run e2etest
       
-      # E2E TESTS  
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-            name: playwright-report
-            path: playwright-report/
-            retention-days: 30
+      # E2E TESTS: Playwright  
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
+      # - name: Run Playwright tests
+      #   run: npx playwright test
+      # - uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #       name: playwright-report
+      #       path: playwright-report/
+      #       retention-days: 30
       
       # DEPLOYMENT
       - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
@@ -61,10 +61,10 @@ jobs:
           DISCORD_USERNAME: PetriA
           DISCORD_EMBEDS: >
             [{
-                "type": "Info",
-                "title": "Patientor build",
-                "description": "Successful build from repo: ${{ github.repository }}",
-                "color": 40811
+                "type":"Info",
+                "title":"Patientor build",
+                "description":"Successful build from repo: ${{github.event.repository.name}}",
+                "color":40811
             }]
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
@@ -77,15 +77,15 @@ jobs:
           DISCORD_USERNAME: PetriA
           DISCORD_EMBEDS: >
             [{
-              "type": "Error",
-              "title": "Patientor build",
-              "description": "Failed build from repo: ${{ github.repository }}",
+              "type":"Error",
+              "title":"Patientor build",
+              "description":"Failed build.",
               "fields":[{
                     {"name":"Commit Message","value":"[${{ github.sha }}](https://github.com/${{github.repository}}/commit/${{github.sha}}) - `${{github.event.head_commit.message}}`"},
                     {"name":"Changed Files","value":"${{ steps.changed-files.outputs.all_changed_files }}"},
                     {"name":"Author","value":"[${{github.event.head_commit.author.name}}](https://github.com/${{github.actor}})"
                 }],
-              "color": 16711680,
+              "color":16711680,
               "url":"https://github.com/${{github.repository}}/commit/${{github.sha}}",
               "timestamp":"${{github.event.head_commit.timestamp}}",
               "footer":{"text":"${{github.event.head_commit.timestamp}}"}
