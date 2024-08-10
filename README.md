@@ -1,5 +1,13 @@
+# CI/CD Essay
+Exercise 11.1
+https://github.com/pasunmaa/full-stack-open-pokedex/blob/main/exercise1.md
+
+# Pokedex
+Exercises 11.2 - 11.19
+repo: https://github.com/pasunmaa/full-stack-open-pokedex
+
 # FSO-CICD-patientor
-Exercise 11.20 monorepo
+Exercises 11.20 - 11.21 monorepo
 
 ## Installation
 
