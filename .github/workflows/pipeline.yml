@@ -1,15 +1,15 @@
+name: Patientor CI/CD pipeline
+
 on:
   push:
     branches:
-      - master
       - main
   pull_request:
-    branches: [master, main]
+    branches: [main]
     types: [opened, synchronize]
+
 jobs:
   simple_deployment_pipeline:
-    env:
-      TM_STAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
     timeout-minutes: 60
     runs-on: ubuntu-20.04
     steps:
@@ -34,58 +34,31 @@ jobs:
       - name: Run unit tests
         run: npm test
       - name: Run e2e server tests
-        run: npm run e2etest # vitest not found in root, as npm install is not run in root
-        # NO E2E TESTS  
-      # - name: Install Playwright Browsers
-      #   run: npx playwright install --with-deps
-      # - name: Run Playwright tests
-      #   run: npx playwright test
-      # - uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #       name: playwright-report
-      #       path: playwright-report/
-      #       retention-days: 30
+        run: npm run e2etest
+      
+      # E2E TESTS  
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+            name: playwright-report
+            path: playwright-report/
+            retention-days: 30
       
       # DEPLOYMENT
       - if: ${{ github.event_name == 'push' && (contains(join(github.event.commits.*.message, ' '), '#skip') == false) }}
         name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
-      - name: Github variables usage
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_WORKFLOW: ${{ github.workflow }}
-          GH_REF: ${{ github.ref }}
-          GH_ACTOR: ${{ github.actor }}
-          GITHUB_JOB: ${{ github.job }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_ACTION: ${{ github.action }}
-          #GITHUB_ACTIONS: ${{ github.actions }}
-          GITHUB_EVENT: ${{ toJson(github.event) }}
-          
-        run: |
-          echo "GITHUB_REPOSITORY: ${{ github.repository }}"
-          echo "Github actor from environment variable - long format: ${{env.GH_ACTOR}}"
-          echo "Github actor from environment variable - short format: $GH_ACTOR"
-          echo "Github commit time stamps: ${{ env.TM_STAMP }}"
-          echo "Github first commit time stamp: ${{ toJson(github.event.commits[0].timestamp) }} "
-      # - name: Discord notification with curl
-      #   env:
-      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      #     DISCORD_USERNAME: PetriA
-      #     DISCORD_EMBEDS: '[{"type": "Info", "title": "Push", "description": "Notification with curl.", "color": 40811" }]'
-      #   run: |
-      #     curl -X POST -H 'Content-type: application/json' -d '{"username": "${{env.DISCORD_USERNAME}}", \
-      #       "content": "Testing Discord Webhook", "embeds": "${{env.DISCORD_EMBEDS}}" }' ${{env.DISCORD_WEBHOOK}}
-
+      # DISCORD NOTIFICATIONS
       - name: Build success discord notification
         if: ${{ success() && (contains(join(github.event.commits.*.message, ' '), '#discord') == true) }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
-          COMMIT_TIMESTAMP: ${{ toJson(github.event.commits[0].timestamp) }} 
           DISCORD_EMBEDS: >
             [{
                 "type": "Info",
@@ -93,43 +66,34 @@ jobs:
                 "description": "Successful build from repo: ${{ github.repository }}",
                 "color": 40811
             }]
-          #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
           args: "A new version of Patientor deployed by ${{ github.actor }}."
+
       - name: Build failure discord notification
-        if: ${{ failure() }}
+        if: ${{ failure() || (contains(join(github.event.commits.*.message, ' '), '#discord_failure')) }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: PetriA
-          #DISCORD_EMBEDS: '[{"title":"Push to main", "color": 40811", "description": "Description in DISCORD_EMBEDS." }]'
-          DISCORD_EMBEDS: '[{ "type": "Error", "title": "Patientor build", "description": "Failed build in repo ${{ github.repository }} at ${{env.TM_STAMP}}", "color": 16711680 }]'
-          
-          #DISCORD_EMBEDS: '[{"title":"Commit", "color": 40811, "timestamp": ${{toJson(github.event.commits.*.timestamp)}} }]'
+          DISCORD_EMBEDS: >
+            [{
+              "type": "Error",
+              "title": "Patientor build",
+              "description": "Failed build from repo: ${{ github.repository }}",
+              "fields":[{
+                    {"name":"Commit Message","value":"[${{ github.sha }}](https://github.com/${{github.repository}}/commit/${{github.sha}}) - `${{github.event.head_commit.message}}`"},
+                    {"name":"Changed Files","value":"${{ steps.changed-files.outputs.all_changed_files }}"},
+                    {"name":"Author","value":"[${{github.event.head_commit.author.name}}](https://github.com/${{github.actor}})"
+                }],
+              "color": 16711680,
+              "url":"https://github.com/${{github.repository}}/commit/${{github.sha}}",
+              "timestamp":"${{github.event.head_commit.timestamp}}",
+              "footer":{"text":"${{github.event.head_commit.timestamp}}"}
+            }]
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
         with:
           args: "Failed to build a new version of Patientor by ${{ github.actor }}."
   
-      # - name: Notify successful deployment
-      #   uses: rjstone/discord-webhook-notify@v1
-      #   if: ${{ success() }}
-      #   with:
-      #     severity: info
-      #     text: 'Patientor BUILD succeeded.'
-      #     description: ""
-      #     details: ""
-      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      #   env:
-      #     DEBUG: true  # Enable debug mode to log the response
-      # - name: Notify deployment failure
-      #   uses: rjstone/discord-webhook-notify@v1
-      #   if: ${{ failure() }}
-      #   with:
-      #     severity: error
-      #     text: 'Patientor BUILD failed.'
-      #     description: "Initiator: ${{ github.actor }}"
-      #     details: "Repo: ${{ github.repository }}"
-      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
